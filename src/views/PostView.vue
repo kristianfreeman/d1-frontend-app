@@ -15,8 +15,8 @@
 
     <div v-if="post.comments">
       <div v-for="comment in post.comments">
-        <p v-text="comment.body"></p>
-        <p><em>- {{comment.author}}</em></p>
+        <p v-text="sanitize(comment.body)"></p>
+        <p><em>- {{sanitize(comment.author)}}</em></p>
       </div>
     </div>
   </div>
@@ -66,8 +66,8 @@ export default {
       evt.preventDefault()
 
       const newComment = {
-        body: this.comment.body,
-        author: this.comment.author
+        body: this.sanitize(this.comment.body),
+        author: this.sanitize(this.comment.author)
       }
 
       const resp = await fetch(`https://d1-example.signalnerve.workers.dev/api/posts/${this.post.slug}/comments`, {
@@ -79,6 +79,11 @@ export default {
 
       this.comment.author = ""
       this.comment.body = ""
+    },
+
+    sanitize(str) {
+      str = str.replace(/[^a-z0-9áéíóúñü \.,_-]/gim,"");
+      return str.trim();
     }
   }
 }
